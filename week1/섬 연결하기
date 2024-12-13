@@ -1,0 +1,42 @@
+def find(parent, i):
+    if parent[i] == i:
+        return i
+    return find(parent, parent[i])
+
+def union(parent, rank, x, y):
+    xroot = find(parent, x)
+    yroot = find(parent, y)
+    
+    if rank[xroot] < rank[yroot]:
+        parent[xroot] = yroot
+    elif rank[xroot] > rank[yroot]:
+        parent[yroot] = xroot
+    else:
+        parent[yroot] = xroot
+        rank[xroot] += 1
+
+def solution(n, costs):
+    # 간선을 비용에 따라 정렬
+    costs.sort(key=lambda x: x[2])
+    
+    parent = list(range(n))
+    rank = [0] * n
+    
+    min_cost = 0
+    edges = 0
+    
+    for cost in costs:
+        x, y, weight = cost
+        
+        x_set = find(parent, x)
+        y_set = find(parent, y)
+        
+        if x_set != y_set:
+            union(parent, rank, x_set, y_set)
+            min_cost += weight
+            edges += 1
+        
+        if edges == n - 1:
+            break
+    
+    return min_cost
